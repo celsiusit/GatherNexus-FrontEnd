@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-stg
+  namespace: staging-space
+spec:
+  replicas: 1  # Number of pods to run
+  selector:
+    matchLabels:
+      app: frontend-stg
+  template:
+    metadata:
+      labels:
+        app: frontend-stg
+    spec:
+      containers:
+        - name: frontend-stg
+          image: vishathamarasinghe/gathernexus-frontend-stg:latest  # Docker image for the API Gateway
+          ports:
+            - containerPort: 80  # Port exposed inside the container
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-stg
+  namespace: staging-space
+spec:
+  selector:
+    app: frontend-stg  # This will select pods with label 'app=frontend-stg'
+  ports:
+    - protocol: TCP
+      port: 5601  # Exposing port 5601 on the service
+      targetPort: 80  # The port the container is listening on
+  type: ClusterIP  # exposes the service internally within the cluster
